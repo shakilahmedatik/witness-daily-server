@@ -3,14 +3,16 @@ const { errorHandler } = require('../helpers/dbErrorHandler')
 
 //Read all articles
 exports.articles = (req, res) => {
-  Article.find().exec((err, articles) => {
-    if (err) {
-      return res.status(400).json({
-        error: errorHandler(err),
-      })
-    }
-    res.json(articles)
-  })
+  Article.find()
+    .sort({ createdAt: 'desc' })
+    .exec((err, articles) => {
+      if (err) {
+        return res.status(400).json({
+          error: errorHandler(err),
+        })
+      }
+      res.json(articles)
+    })
 }
 
 //Read Single article

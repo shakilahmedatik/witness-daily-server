@@ -10,7 +10,6 @@ require('dotenv').config()
 //Routes
 const articleRoutes = require('./routes/articles')
 const userRoutes = require('./routes/user')
-const categoryRoutes = require('./routes/category')
 
 //Initialize App
 const app = express()
@@ -34,7 +33,6 @@ mongoose
 //Routes middleware
 app.use('/api', articleRoutes)
 app.use('/api', userRoutes)
-app.use('/api', categoryRoutes)
 
 //Initialize Server
 const port = process.env.PORT || 8000
