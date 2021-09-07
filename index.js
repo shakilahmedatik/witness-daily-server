@@ -1,10 +1,11 @@
 //Import Modules
+const cors = require('cors')
 const express = require('express')
 const mongoose = require('mongoose')
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const expressValidator = require('express-validator')
-const cors = require('cors')
+
 require('dotenv').config()
 
 //Routes
@@ -15,11 +16,11 @@ const userRoutes = require('./routes/user')
 const app = express()
 
 // middlewares
+app.use(cors())
 app.use(morgan('dev'))
 app.use(express.json())
 app.use(cookieParser())
 app.use(expressValidator())
-app.use(cors())
 
 //Connect Database
 mongoose
