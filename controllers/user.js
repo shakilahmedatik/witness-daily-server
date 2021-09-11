@@ -4,28 +4,37 @@ const expressJwt = require('express-jwt') // for authorization check
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
-exports.signup = (req, res) => {
-  console.log('req.body', req.body)
-  const user = new User(req.body)
-  user.save((err, user) => {
-    if (err) {
-      return res.status(400).json({
-        error: errorHandler(err),
+// User Signup
+exports.signup = async (req, res) => {
+  try {
+    console.log(req.body)
+    const { name, email, password } = req.body
+    // validation
+    if (!name) return res.status(400).send({ error: 'Name is required!' })
+    if (!password || password.length < 6)
+      return res.status(400).send({
+        error: 'Password is required and should be min 6 characters long',
       })
-    } else {
-      user.salt = undefined
-      user.hashed_password = undefined
-      res.json({
-        user,
-      })
-    }
-  })
+    let userExist = await User.findOne({ email }).exec()
+    if (userExist) return res.status(400).send({ error: 'Email is taken' })
+    // register
+    const user = new User(req.body)
+
+    await user.save()
+    console.log('USER CREATED', user)
+    return res.json({ ok: true })
+  } catch (err) {
+    console.log('CREATE USER FAILED', err)
+    return res.status(400).send('Error. Try again.')
+  }
 }
 
+// User Login
 exports.signin = (req, res) => {
   const { email, password } = req.body
   User.findOne({ email }, (err, user) => {
     if (err || !user) {
+      console.log(err)
       return res.status(400).json({
         error: "Email doesn't exist, please signup.",
       })
@@ -33,7 +42,7 @@ exports.signin = (req, res) => {
     //If user found make sure Email & Password match
     //Create authenticate method in user model
     if (!user.authenticate(password)) {
-      return res.status(401).json({
+      return res.status(400).json({
         error: "Email & password doesn't match",
       })
     }
